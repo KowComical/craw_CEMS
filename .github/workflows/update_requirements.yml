@@ -15,7 +15,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
-          token: ${{ secrets.API_TOKEN_GITHUB_2 }} # Use your personal access token
+          token: ${{ secrets.CEMS }} # Use your personal access token
           fetch-depth: 0
       
       - name: Self test
