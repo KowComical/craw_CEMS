@@ -23,7 +23,10 @@ tool_path = os.path.join(global_path, 'tools')
 def main():
     start_date = date(2020, 1, 1)
     end_date = date.today()
-    craw_data(start_date, end_date)
+    try:
+        craw_data(start_date, end_date)
+    except Exception as e:
+        traceback.print_exc()
 
 
 def find_certain_file(certain_time):
@@ -277,7 +280,7 @@ def craw_data(start_date, end_date=None):
                         df_final = pd.DataFrame(data)
 
                     df_final.to_csv(year_month_path, index=False, encoding='utf_8_sig', mode='a', header=False)
-                    print(f'{company_name} - {current_date} - Finished')
+                    # print(f'{company_name} - {current_date} - Finished')
                     time.sleep(random.uniform(5, 10))
             print(f'{current_date} - 已爬取')
             current_date += delta
