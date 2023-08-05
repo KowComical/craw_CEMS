@@ -10,10 +10,7 @@ import traceback
 import numpy as np
 
 import cloudscraper
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.chrome.options import Options
+import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
 
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
@@ -75,15 +72,15 @@ def find_requests(driver, company_selector=None, luzi_selector=None, data_select
 
 
 def setup_webdriver():
-    chrome_options = Options()
+    chrome_options = uc.ChromeOptions()
     chrome_options.add_argument('--enable-logging')
     chrome_options.add_argument('--v=1')
     chrome_options.add_argument("--no-sandbox")
-    # chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--headless')
     chrome_options.add_argument('--disable-gpu')
     chrome_options.set_capability('goog:loggingPrefs', {'performance': 'ALL'})
 
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+    driver = uc.Chrome(options=chrome_options)
     driver.implicitly_wait(10)
 
     return driver
