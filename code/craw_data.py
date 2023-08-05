@@ -282,7 +282,7 @@ def craw_data(start_date, end_date=None):
                     df_final.to_csv(year_month_path, index=False, encoding='utf_8_sig', mode='a', header=False)
                     # print(f'{company_name} - {current_date} - Finished')
                     time.sleep(random.uniform(5, 10))
-            print(f'{current_date} - 已爬取')
+            print(f'{current_date} - Finished')
             current_date += delta
         return
     except Exception as e:
