@@ -3,6 +3,10 @@ name: all_action
   schedule:
     - cron: '0 * * * *'
   workflow_dispatch: # 添加一个可以手动运行的按钮
+
+concurrency: 
+  group: all_process
+
 jobs:
   all_process: # 处理所有数据
     runs-on: windows-latest
@@ -10,12 +14,12 @@ jobs:
       - name: Set up Node.js 16
         uses: actions/setup-node@v2
         with:
-          node-version: 16 # This line was updated to use Node.js 16
+          node-version: 16
 
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
-          token: ${{ secrets.CEMS }} # Use your personal access token
+          token: ${{ secrets.CEMS }}
           fetch-depth: 0
 
       - name: Set up Python 3.10
@@ -30,7 +34,7 @@ jobs:
       - name: Run code 
         run: |
           python ./code/craw_data.py
-          
+        timeout-minutes: 330 # 如果超过330分钟（将近6小时）则直接取消并进行下一步
         continue-on-error: true
 
       - name: Commit and push
