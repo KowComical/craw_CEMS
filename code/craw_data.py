@@ -21,7 +21,7 @@ tool_path = os.path.join(global_path, 'tools')
 
 
 def main():
-    start_date = date(2020, 1, 1)
+    start_date = date(2022, 2, 1)
     end_date = date.today()
     try:
         craw_data(start_date, end_date)
