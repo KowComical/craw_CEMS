@@ -21,7 +21,7 @@ tool_path = os.path.join(global_path, 'tools')
 
 
 def main():
-    start_date = date(2022, 2, 1)
+    start_date = date(2022, 2, 4)
     end_date = date.today()
     try:
         craw_data(start_date, end_date)
@@ -191,7 +191,6 @@ def craw_data(start_date, end_date=None):
         finally:
             wd.close()
 
-        # all_company = pd.read_csv(os.path.join(tool_path, 'company_information.csv'))
         current_date = start_date
         while current_date < end_date:
             current_date_str = current_date.strftime('%Y%m%d')
@@ -245,12 +244,6 @@ def craw_data(start_date, end_date=None):
                                 break
                             else:
                                 wd, company_url, data_url = craw_cookie()
-                                scraper = cloudscraper.create_scraper(
-                                    browser={
-                                        'browser': 'chrome',
-                                        'platform': 'windows',
-                                        'desktop': True})
-                                all_company = pd.read_csv(os.path.join(tool_path, 'company_information.csv'))
                                 wd.close()
                         df_data = pd.DataFrame()
 
@@ -262,20 +255,11 @@ def craw_data(start_date, end_date=None):
                     if len(df_final) != 0:
                         df_final['company'] = company_name
                     else:
-                        data = {'ps_code': [np.nan],
-                                'mp_code': [np.nan],
-                                'monitor_time': [np.nan],
-                                'pollutant_code': [np.nan],
-                                'pollutant_name': [np.nan],
-                                'strength': [np.nan],
-                                'standard_value': [np.nan],
-                                'remark': [np.nan],
-                                'status': [np.nan],
-                                'data_status': [np.nan],
-                                'create_time': [np.nan],
-                                'update_time': [np.nan],
-                                'day': [current_date_str],
-                                'company': [company_name]}
+                        data = {'ps_code': [np.nan], 'mp_code': [np.nan], 'monitor_time': [np.nan],
+                                'pollutant_code': [np.nan], 'pollutant_name': [np.nan], 'strength': [np.nan],
+                                'standard_value': [np.nan], 'remark': [np.nan], 'status': [np.nan],
+                                'data_status': [np.nan], 'create_time': [np.nan], 'update_time': [np.nan],
+                                'day': [current_date_str], 'company': [company_name]}
 
                         df_final = pd.DataFrame(data)
 
