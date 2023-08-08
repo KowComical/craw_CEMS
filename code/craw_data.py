@@ -178,97 +178,97 @@ def craw_data(start_date, end_date=None):
         }
 
         wd, company_url, data_url = craw_cookie()
-        try:
-            scraper = cloudscraper.create_scraper(
-                browser={
-                    'browser': 'chrome',
-                    'platform': 'windows',
-                    'desktop': True})
-            # 全公司信息
-            company_html = scraper.get(company_url)
-            all_company = pd.json_normalize(company_html.json())
-            all_company.to_csv(os.path.join(tool_path, 'company_information.csv'), index=False, encoding='utf_8_sig')
-        finally:
-            wd.close()
+        with requests.Session() as session:
+            with cloudscraper.create_scraper(sess=session, browser={
+                            'browser': 'chrome',
+                            'platform': 'windows',
+                            'desktop': True}) as scraper:
+                try:
+                    # 全公司信息
+                    company_html = scraper.get(company_url)
+                    all_company = pd.json_normalize(company_html.json())
+                    all_company.to_csv(os.path.join(tool_path, 'company_information.csv'), index=False, encoding='utf_8_sig')
+                finally:
+                    wd.close()
 
-        current_date = start_date
-        while current_date < end_date:
-            current_date_str = current_date.strftime('%Y%m%d')
+                current_date = start_date
+                while current_date < end_date:
+                    current_date_str = current_date.strftime('%Y%m%d')
 
-            current_date_year = current_date.strftime('%Y')
-            os.makedirs(current_date_year, exist_ok=True)
+                    current_date_year = current_date.strftime('%Y')
+                    os.makedirs(current_date_year, exist_ok=True)
 
-            current_date_year_month = current_date.strftime('%Y-%m')
+                    current_date_year_month = current_date.strftime('%Y-%m')
 
-            year_month_path = find_certain_file(current_date_year_month)
+                    year_month_path = find_certain_file(current_date_year_month)
 
-            if year_month_path is not None:
-                df_year_month = pd.read_csv(year_month_path)
-                df_year_month['day'] = df_year_month['day'].astype(str)
-            else:  # 如果这个文件不存在则创建新的
-                column_names = ['ps_code', 'mp_code', 'monitor_time', 'pollutant_code', 'pollutant_name',
-                                'strength', 'standard_value', 'remark', 'status', 'data_status',
-                                'create_time', 'update_time', 'day', 'company']
+                    if year_month_path is not None:
+                        df_year_month = pd.read_csv(year_month_path)
+                        df_year_month['day'] = df_year_month['day'].astype(str)
+                    else:  # 如果这个文件不存在则创建新的
+                        column_names = ['ps_code', 'mp_code', 'monitor_time', 'pollutant_code', 'pollutant_name',
+                                        'strength', 'standard_value', 'remark', 'status', 'data_status',
+                                        'create_time', 'update_time', 'day', 'company']
 
-                df_year_month = pd.DataFrame(columns=column_names)
+                        df_year_month = pd.DataFrame(columns=column_names)
 
-                year_month_path = os.path.join(file_path, current_date_year, f'{current_date_year_month}.csv')
-                df_year_month.to_csv(year_month_path, index=False, encoding='utf_8_sig')
+                        year_month_path = os.path.join(file_path, current_date_year, f'{current_date_year_month}.csv')
+                        df_year_month.to_csv(year_month_path, index=False, encoding='utf_8_sig')
 
-            for ps in ps_code_list:
-                # 获取公司名称
-                company_name = all_company[all_company['ps_code'] == ps]['ps_name'].tolist()[0]
-                # 查看这个公司这个日期是否存在
-                df_specific = df_year_month[
-                    (df_year_month['company'] == company_name) & (df_year_month['day'] == current_date_str)]
+                    for ps in ps_code_list:
+                        # 获取公司名称
+                        company_name = all_company[all_company['ps_code'] == ps]['ps_name'].tolist()[0]
+                        # 查看这个公司这个日期是否存在
+                        df_specific = df_year_month[
+                            (df_year_month['company'] == company_name) & (df_year_month['day'] == current_date_str)]
 
-                if len(df_specific) == 0:
+                        if len(df_specific) == 0:
 
-                    mp_code_list = df_code[df_code['ps_code'] == ps]['mp_code'].unique()
-                    df_final = pd.DataFrame()
-                    for mp in mp_code_list:
-                        provided_dict['pscode'] = ps
-                        provided_dict['outputcode'] = mp
-                        provided_dict['day'] = current_date_str
+                            mp_code_list = df_code[df_code['ps_code'] == ps]['mp_code'].unique()
+                            df_final = pd.DataFrame()
+                            for mp in mp_code_list:
+                                provided_dict['pscode'] = ps
+                                provided_dict['outputcode'] = mp
+                                provided_dict['day'] = current_date_str
 
-                        while True:
-                            replacement_dict = create_replacement_dict(data_url, provided_dict)
-                            real_data_url = replace_query_params_with_dict(data_url, replacement_dict)
-                            # 开始爬取数据
-                            time.sleep(random.uniform(5, 10))
-                            try:
-                                temp_data = scraper.get(real_data_url).json()
-                            except requests.exceptions.JSONDecodeError as e:
-                                temp_data = None
-                            if isinstance(temp_data, list) and temp_data is not None:
-                                break
+                                while True:
+                                    replacement_dict = create_replacement_dict(data_url, provided_dict)
+                                    real_data_url = replace_query_params_with_dict(data_url, replacement_dict)
+                                    # 开始爬取数据
+                                    time.sleep(random.uniform(5, 10))
+                                    try:
+                                        temp_data = scraper.get(real_data_url).json()
+                                    except requests.exceptions.JSONDecodeError as e:
+                                        temp_data = None
+                                    if isinstance(temp_data, list) and temp_data is not None:
+                                        break
+                                    else:
+                                        wd, company_url, data_url = craw_cookie()
+                                        wd.close()
+                                df_data = pd.DataFrame()
+
+                                for i in range(len(temp_data)):
+                                    test = pd.json_normalize(temp_data[i])
+                                    df_data = pd.concat([df_data, test]).reset_index(drop=True)
+
+                                df_final = pd.concat([df_final, df_data]).reset_index(drop=True)
+                            if len(df_final) != 0:
+                                df_final['company'] = company_name
                             else:
-                                wd, company_url, data_url = craw_cookie()
-                                wd.close()
-                        df_data = pd.DataFrame()
+                                data = {'ps_code': [np.nan], 'mp_code': [np.nan], 'monitor_time': [np.nan],
+                                        'pollutant_code': [np.nan], 'pollutant_name': [np.nan], 'strength': [np.nan],
+                                        'standard_value': [np.nan], 'remark': [np.nan], 'status': [np.nan],
+                                        'data_status': [np.nan], 'create_time': [np.nan], 'update_time': [np.nan],
+                                        'day': [current_date_str], 'company': [company_name]}
 
-                        for i in range(len(temp_data)):
-                            test = pd.json_normalize(temp_data[i])
-                            df_data = pd.concat([df_data, test]).reset_index(drop=True)
+                                df_final = pd.DataFrame(data)
 
-                        df_final = pd.concat([df_final, df_data]).reset_index(drop=True)
-                    if len(df_final) != 0:
-                        df_final['company'] = company_name
-                    else:
-                        data = {'ps_code': [np.nan], 'mp_code': [np.nan], 'monitor_time': [np.nan],
-                                'pollutant_code': [np.nan], 'pollutant_name': [np.nan], 'strength': [np.nan],
-                                'standard_value': [np.nan], 'remark': [np.nan], 'status': [np.nan],
-                                'data_status': [np.nan], 'create_time': [np.nan], 'update_time': [np.nan],
-                                'day': [current_date_str], 'company': [company_name]}
-
-                        df_final = pd.DataFrame(data)
-
-                    df_final.to_csv(year_month_path, index=False, encoding='utf_8_sig', mode='a', header=False)
-                    # print(f'{company_name} - {current_date} - Finished')
-                    time.sleep(random.uniform(5, 10))
-            print(f'{current_date} - Finished')
-            current_date += delta
-        return
+                            df_final.to_csv(year_month_path, index=False, encoding='utf_8_sig', mode='a', header=False)
+                            # print(f'{company_name} - {current_date} - Finished')
+                            time.sleep(random.uniform(5, 10))
+                    print(f'{current_date} - Finished')
+                    current_date += delta
+                return
     except Exception as e:
         traceback.print_exc()
         return
