@@ -29,8 +29,8 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Check pip cache directory
-        run: pip cache dir
+#      - name: Check pip cache directory
+#        run: pip cache dir
 
       - name: Cache Python dependencies
         uses: actions/cache@v2
