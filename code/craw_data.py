@@ -237,7 +237,7 @@ def craw_data(start_date, end_date=None):
                                     # 开始爬取数据
                                     time.sleep(random.uniform(5, 10))
                                     try:
-                                        temp_data = scraper.get(real_data_url).json()
+                                        temp_data = scraper.get(real_data_url, timeout=30).json()
                                     except requests.exceptions.JSONDecodeError as e:
                                         temp_data = None
                                     if isinstance(temp_data, list) and temp_data is not None:
