@@ -15,18 +15,20 @@ from selenium.webdriver.common.by import By
 
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
 
+import warnings
+
+warnings.simplefilter(action='ignore', category=pd.errors.DtypeWarning)
+
 global_path = '.'
 file_path = os.path.join(global_path, 'data')
 tool_path = os.path.join(global_path, 'tools')
 
 
 def main():
-    start_date = date(2022, 2, 7)
+    start_date = date(2022, 8, 1)
     end_date = date.today()
-    try:
-        craw_data(start_date, end_date)
-    except Exception as e:
-        traceback.print_exc()
+
+    craw_data(start_date, end_date)
 
 
 def find_certain_file(certain_time):
