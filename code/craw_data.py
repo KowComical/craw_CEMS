@@ -27,8 +27,8 @@ def main():
             start_date = date.fromisoformat(file.read().strip())
     else:
         start_date = date(2020, 1, 1)
-
     end_date = date.today()
+
     try:
         craw_data(start_date, end_date)
     except Exception as e:
@@ -283,3 +283,5 @@ def craw_data(start_date, end_date=None):
 
 if __name__ == '__main__':
     main()
+
+
