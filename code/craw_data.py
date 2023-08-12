@@ -24,7 +24,7 @@ txt_path = os.path.join(tool_path, 'last_completed_date.txt')
 def main():
     if os.path.exists(txt_path):
         with open(txt_path, 'r') as file:
-            start_date = date.fromisoformat(file.read().strip())
+            start_date = date.fromisoformat(file.read().strip()) + timedelta(days=1)
     else:
         start_date = date(2020, 1, 1)
     end_date = date.today()
