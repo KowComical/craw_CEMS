@@ -94,6 +94,8 @@ def setup_webdriver():
     chrome_options.add_argument('--disable-gpu')
     chrome_options.set_capability('goog:loggingPrefs', {'performance': 'ALL'})
 
+    chrome_options.binary_location = '/usr/bin/google-chrome-stable'
+
     driver = uc.Chrome(options=chrome_options)
     driver.implicitly_wait(10)
 
