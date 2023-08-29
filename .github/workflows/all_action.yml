@@ -10,18 +10,13 @@ concurrency:
 
 jobs:
   UpdateData: # More descriptive job name
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Set up Node.js 16
         uses: actions/setup-node@v2
         with:
           node-version: 16
-
-      - name: Set up Chrome
-        uses: browser-actions/setup-chrome@v1
-        with:
-          chrome-version: '1140575' # 默认是最新 但是最新的116 driver版本没跟上
 
       - name: Checkout repository
         uses: actions/checkout@v2
