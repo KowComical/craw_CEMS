@@ -18,6 +18,11 @@ jobs:
         with:
           node-version: 16
 
+      - name: Set up Chrome
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: '114.0.5735.16' # 默认是最新 但是最新的116 driver版本没跟上
+
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
