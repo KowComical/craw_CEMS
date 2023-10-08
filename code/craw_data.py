@@ -196,12 +196,22 @@ def craw_data(start_date, end_date=None):
             try:
                 # 全公司信息
                 company_html = scraper.get(company_url)
-                all_company = pd.json_normalize(company_html.json())
-                all_company.to_csv(os.path.join(tool_path, 'company_information.csv'), index=False,
-                                   encoding='utf_8_sig')
+                new_all_company = pd.json_normalize(company_html.json())
+
+                # Check if old company_information.csv exists
+                company_info_path = os.path.join(tool_path, 'company_information.csv')
+                if os.path.exists(company_info_path):
+                    old_all_company = pd.read_csv(company_info_path)
+
+                    # Check if the company number has increased
+                    if len(new_all_company) > len(old_all_company):
+                        start_date = date(2020, 1, 1)
+
+                # Save the new data
+                new_all_company.to_csv(company_info_path, index=False, encoding='utf_8_sig')
             finally:
                 wd.close()
-
+                
             current_date = start_date
             while current_date < end_date:
                 current_date_str = current_date.strftime('%Y%m%d')
