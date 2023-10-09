@@ -238,7 +238,7 @@ def craw_data(start_date, end_date=None):
 
                 for ps in ps_code_list:
                     # 获取公司名称
-                    company_name = all_company[all_company['ps_code'] == ps]['ps_name'].tolist()[0]
+                    company_name = new_all_company[new_all_company['ps_code'] == ps]['ps_name'].tolist()[0]
                     # 查看这个公司这个日期是否存在
                     df_specific = df_year_month[
                         (df_year_month['company'] == company_name) & (df_year_month['day'] == current_date_str)]
