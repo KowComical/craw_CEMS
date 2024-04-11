@@ -233,8 +233,9 @@ def craw_data(start_date, end_date=None):
 
                     df_year_month = pd.DataFrame(columns=column_names)
 
-                    year_month_path = os.path.join(file_path, current_date_year, f'{current_date_year_month}.csv')
-                    df_year_month.to_csv(year_month_path, index=False, encoding='utf_8_sig')
+                    year_month_path = os.path.join(file_path, current_date_year)
+                    os.makedirs(year_month_path, exist_ok=True)
+                    df_year_month.to_csv(os.path,join(year_month_path, f'{current_date_year_month}.csv'), index=False, encoding='utf_8_sig')
 
                 for ps in ps_code_list:
                     # 获取公司名称
